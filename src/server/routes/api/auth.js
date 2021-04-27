@@ -42,10 +42,10 @@ router.post("/login", passport.authenticate('local'), async (req, res) => {
 
     try {
 
-        const token = jwt.sign({ "id": req.user.id, "role": req.user.role, "email": req.user.email }, process.env.JWT_SECRET, { expiresIn: '15s' });
+        const token = jwt.sign({ "id": req.user.id, "role": req.user.role, "email": req.user.email }, process.env.JWT_SECRET, { expiresIn: '15d' });
       
 
-        return res.json(token)
+        res.status(200).json(token)
 
 
 

@@ -1,6 +1,7 @@
 import express from 'express';
 import db from '../../db/users';
 import { generateHash, checkPassword } from '../../utils/security';
+import { tokenCheck } from '../../middleware/auth.mw'
 
 const router = express.Router();
 
@@ -14,6 +15,28 @@ router.get('/', async (req, res) => {
     }
 
 });
+
+router.get('/me', /* passport.authenticate('jwt') */ tokenCheck,  async (req, res) => {
+    /* const bearerToken = req.headers.authorization;
+
+    if (bearerToken) {
+        const token = bearerToken.split(' ')[1];
+
+        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+            if (err) {
+                return res.sendStatus(403);
+            }
+
+            res.json({user})
+        });
+    } else {
+        res.sendStatus(401);
+    } */
+
+    res.json({message: req.user})
+
+});
+
 
 router.get('/:id', async (req, res) => {
     let userid = req.params.id
@@ -59,6 +82,26 @@ router.put("/", async (req, res) => {
     }
 });
 
+router.put("/forgot-password", async (req, res) => {
+
+
+    try {
+        let hash = await generateHash(req.body.password);
+        let insertObject = {
+            hash,
+            id: req.body.id
+        };
+        
+        console.log(insertObject);
+        let idObj = await db.update(insertObject, insertObject.id);
+        res.status(201).json(idObj);
+
+    } catch (err) {
+    console.log('Error' + err);
+       res.send(err)
+
+    }
+});
 
 router.post("/", async (req, res) => {
 
@@ -101,8 +144,8 @@ router.post("/getUser", async (req, res) => {
         let value = req.body.value;
 
 
-        let idObj = await db.findEmail(column, value);
-        res.status(201).json(idObj);
+        let idObj = await db.findUser(column, value);
+        res.status(200).json(idObj);
 
     } catch (err) {
         console.log(err)

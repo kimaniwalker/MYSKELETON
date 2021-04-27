@@ -12,9 +12,10 @@ async function checkLogin() {
     if (loggedIn) {
       return true;
     } else {
-       token.populateAuthToken();
+      let usertoken = await token.populateAuthToken();
+      console.log(usertoken)
       try {
-        let user = await getUser();
+        let user = await getUser(usertoken.split(' ')[1]);
         loggedIn = true;
         console.log(user);
         return true;
@@ -45,7 +46,7 @@ async function login(email, password) {
   } else if (response.status === 401) {
     let json = await response;
     console.log(json)
-    return json.statusText;
+    return null;
   }
 }
 
@@ -56,8 +57,25 @@ async function logout() {
   return null
 }
 
-async function getUser() {
-  return null
+async function getUser(token) {
+
+  try {
+    let res = await fetch("/api/users/me", {
+      method: "GET",
+      headers: new Headers({
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      })
+    });
+
+    let user = await res.json()
+    console.log(user);
+    return user
+  } catch (err) {
+    console.log(err)
+  }
+
+
 }
 
 export { isLoggedIn, checkLogin, login, logout, getUser };

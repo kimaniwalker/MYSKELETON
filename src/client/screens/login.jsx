@@ -1,6 +1,6 @@
-import React from 'react'
-import { login, checkLogin } from '../utils/auth';
-import {useHistory, useLocation, useRouteMatch, Redirect} from 'react-router-dom'
+import React, { useState } from 'react'
+import { login, checkLogin, getUser } from '../utils/auth';
+import { useHistory, useLocation, useRouteMatch, Redirect } from 'react-router-dom'
 
 export default function Login(props) {
 
@@ -9,37 +9,58 @@ export default function Login(props) {
     const [checkingLogin, setcheckingLogin] = React.useState(false);
     const [redirectToReferrer, setredirectToReferrer] = React.useState(false);
     const [message, setMessage] = React.useState('')
+    const [emailValidation, setEmailValidation] = React.useState('form-control')
+    const [passwordValidation, setPasswordValidated] = React.useState('form-control')
     const { from } = props.location.state || { from: { pathname: "/" } };
+    const [token, setToken] = useState(null)
     const { history } = useHistory();
     const { match } = useRouteMatch();
 
 
     React.useEffect(() => {
 
-        /* checkLogin().then(loggedIn => {
-            if (loggedIn) {
-                setredirectToReferrer(true);
-                setcheckingLogin(false);
 
-            } else {
-                setcheckingLogin(false);
-            }
-        }); */
+        validateCredentials();
+
 
     }, [])
+
+    const validateCredentials = () => {
+
+
+        let loggedIn = checkLogin()
+
+        if (loggedIn) {
+            /* setredirectToReferrer(true); */
+            setcheckingLogin(false);
+
+        } else {
+            setcheckingLogin(false);
+        }
+
+    }
 
     const handleSubmit = async (e) => {
 
         try {
             e.preventDefault(); //default is for the page to refresh (won't end up loggin in) 
             let token = await login(email, password)
+            setToken(token)
 
             if (token) {
                 console.log(token);
-                setredirectToReferrer(true);
+                setToken(token)
+                setEmailValidation('form-control is-valid')
+                setPasswordValidated('form-control is-valid')
+                setMessage('Login Successful')
+                getUser(token)
+                /* setredirectToReferrer(true); */
+            } else {
+                setEmailValidation('form-control is-invalid')
+                setPasswordValidated('form-control is-invalid')
+                setMessage('Something went wrong try again')
             }
 
-            
 
         } catch (err) {
             console.log(err)
@@ -74,23 +95,36 @@ export default function Login(props) {
 
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email address</label>
-                                    <input onChange={(e) => setEmail(e.target.value)} value={email} type="email" class="form-control" id="loginEmail" placeholder="name@example.com" />
+                                    <input onChange={(e) => setEmail(e.target.value)} value={email} type="email" class={emailValidation} id="loginEmail" placeholder="name@example.com" />
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label">Password</label>
-                                    <input onChange={(e) => setPassword(e.target.value)} value={password} type="password" class="form-control" id="loginPassword" />
+                                    <input onChange={(e) => setPassword(e.target.value)} value={password} type="password" class={passwordValidation} id="loginPassword" />
 
                                 </div>
 
                             </div>
                             <div className="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
 
+                                <div className="row py-4">
+                                    <span>{message}</span>
+                                </div>
+
+                            </div>
 
 
-                                <button className="btn btn-primary w-100">Submit</button>
+                            <div className="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
+
+                                {
+                                    email.length && password.length >= 1 ?
+
+                                        <button className="btn btn-primary w-100">Submit</button>
+                                        : <button disabled className="btn btn-primary w-100">Submit</button>
+                                }
 
 
                             </div>
+
                         </div>
                     </form>
                 </div>
