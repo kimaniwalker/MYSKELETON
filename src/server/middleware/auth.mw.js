@@ -15,6 +15,7 @@ export function tokenCheck(req, res, next) {
             return res.status(401).send({ message: info.message })
         }
 
+
         if (!user) {
             return res.status(401).json({ message: 'I cant find a user fool' })
         }

@@ -27,8 +27,7 @@ async function getUser(column, value) {
     
    
     try {
-        console.log(value)
-        console.log(column)
+        
         let res = await fetch("/api/users/getUser", {
             method: "POST",
             body: JSON.stringify(column, value),
@@ -41,7 +40,9 @@ async function getUser(column, value) {
         return user
 
     } catch (err) {
+        
         console.log(err)
+        return null
     }
 }
 
@@ -62,6 +63,7 @@ async function resetPassword(password, id) {
 
     } catch (err) {
         console.log(err)
+        
     }
 }
 

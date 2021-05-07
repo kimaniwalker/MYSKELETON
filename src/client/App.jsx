@@ -7,13 +7,27 @@ import Home from './screens/home';
 import Login from './screens/login';
 import Passwordreset from './screens/passwordReset';
 import Register from './screens/register';
+import UseCart from './utils/cart-modules/use-cart';
+import CartContext from './utils/cart-modules/cart-context';
 
 
 export default function App(props) {
 
+	const { cart, addToCart, getCartItems, clearCartItems, removeCartItem, changeQty } = UseCart([])
 
 	return (
 		<>
+		<CartContext.Provider value={{
+        cart,
+        addToCart,
+        getCartItems,
+        clearCartItems,
+        removeCartItem,
+        changeQty,
+      }}>
+		
+
+		
 		<BrowserRouter>
 			
 			<Switch>
@@ -31,6 +45,8 @@ export default function App(props) {
 			</Switch>
 
 		</BrowserRouter>
+		
+		</CartContext.Provider>
 		</>
 	)
 }
