@@ -6,6 +6,7 @@ import passport from 'passport';
 
 
 
+
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -43,7 +44,7 @@ router.post("/login", passport.authenticate('local'), async (req, res) => {
     try {
 
         const token = jwt.sign({ "id": req.user.id, "role": req.user.role, "email": req.user.email }, process.env.JWT_SECRET, { expiresIn: '15d' });
-      
+
 
         res.status(200).json(token)
 
@@ -52,7 +53,7 @@ router.post("/login", passport.authenticate('local'), async (req, res) => {
 
     } catch (err) {
         console.log('Error' + err);
-       res.status(500).send(err);
+        res.status(500).send(err);
 
     }
 });
@@ -62,10 +63,10 @@ router.get("/login/google", passport.authenticate('google', {
 }), async (req, res) => {
 });
 router.get("/login/google/redirect", passport.authenticate('google', {
-    
-        successRedirect: "/",
-        failureRedirect: "/api/auth/login"
-      
+
+    successRedirect: "/",
+    failureRedirect: "/api/auth/login"
+
 }), async (req, res) => {
 
     try {
@@ -83,6 +84,27 @@ router.get("/login/google/redirect", passport.authenticate('google', {
         res.send(err)
     }
 });
+
+
+router.get('/login/paxful', passport.authenticate('oauth2', {
+    scope:
+        ['email', 'profile','paxful:user:me','paxful:user:info','paxful:currency:list','paxful:currency:rates']
+}));
+
+router.get('/login/paxful/login',
+    passport.authenticate('oauth2', { failureRedirect: '/login' }),
+    async function (req, res) {
+        // Successful authentication, redirect home.
+        try {
+            /* const token = jwt.sign({ "id": req.user.id, "role": req.user.role, "email": req.user.email }, process.env.JWT_SECRET, { expiresIn: '15d' });
+
+        console.log(token); */
+        res.redirect('/');
+        } catch (error) {
+            console.log(error)
+        }
+        
+    });
 
 
 export default router;

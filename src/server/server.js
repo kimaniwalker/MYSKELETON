@@ -6,6 +6,7 @@ import dotenv from 'dotenv'
 import passport from 'passport'
 import {configurePassport} from './middleware/passport' 
 
+
 const app = express();
 dotenv.config();
 

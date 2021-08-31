@@ -2,6 +2,7 @@ import passport from 'passport'
 import passportJWT from 'passport-jwt'
 import passportLocal from 'passport-local'
 import passportGoogle from 'passport-google-oauth2'
+import OAuth2Strategy from 'passport-oauth2'
 import { checkPassword } from '../utils/security'
 import db from '../db/users'
 require('dotenv').config();
@@ -62,7 +63,7 @@ export function configurePassport(app) {
                     try {
 
                         console.log(userProfile)
-                        return done(null , userProfile)
+                        return done(null, userProfile)
 
                     } catch (err) {
                         console.log(err);
@@ -72,6 +73,35 @@ export function configurePassport(app) {
             }
         )
     );
+
+    passport.use(new OAuth2Strategy({
+        authorizationURL: 'https://accounts.paxful.com/oauth2/authorize',
+        tokenURL: 'https://accounts.paxful.com/oauth2/token',
+        clientID: process.env.PAXCLIENTID,
+        clientSecret: process.env.PAXSECRET,
+        callbackURL: "http://localhost:3000/api/auth/login/paxful/login"    
+    },
+
+        async function (accessToken, refreshToken, profile, done) {
+
+            let userProfile = profile
+            if (userProfile) {
+                try {
+                    
+                    console.log(accessToken)
+                    console.log(refreshToken)
+                    console.log(userProfile)
+                    return done(null, userProfile)
+
+                } catch (err) {
+                    console.log(err);
+                    return done(null, false, { message: "Invalid login" });
+                }
+            }
+            
+
+        }
+    ));
 
     app.use(passport.initialize());
 

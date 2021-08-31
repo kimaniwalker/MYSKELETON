@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { login, checkLogin, getUser } from '../utils/auth';
-import { useHistory, useLocation, useRouteMatch, Redirect } from 'react-router-dom'
+import { useHistory, useLocation, useRouteMatch, Redirect, Link } from 'react-router-dom'
 
 export default function Login(props) {
 
@@ -121,6 +121,17 @@ export default function Login(props) {
                                         <button className="btn btn-primary w-100">Submit</button>
                                         : <button disabled className="btn btn-primary w-100">Submit</button>
                                 }
+
+
+                            </div>
+                            <div className="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
+
+
+                                <a href="/api/auth/login/paxful" className="btn btn-primary w-100">Login With Paxful</a>
+                               
+                                
+
+
 
 
                             </div>
